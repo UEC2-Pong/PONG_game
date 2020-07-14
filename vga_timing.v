@@ -34,16 +34,16 @@ reg [10:0] hcounter, hcounter_nxt = 0;
     // Video timing controller set for 800x600@60fps
     // using a 40 MHz pixel clock per VESA spec.
     
-  assign hblnk = (hcounter >= 1024);
-  assign vblnk = (vcounter >= 768);
-  assign hsync = (hcounter >= 1048 && hcounter <= 1184);
-  assign vsync = (vcounter >= 771 && vcounter <= 777);
+  assign hblnk = (hcounter >= 800);
+  assign vblnk = (vcounter >= 600);
+  assign hsync = (hcounter >= 840 && hcounter <= 968);
+  assign vsync = (vcounter >= 601 && vcounter <= 605);
   
   
   // horizontal  
   always @*
   begin
-      if (hcounter == 1343)
+      if (hcounter == 1055)
       begin
           hcounter_nxt = 0;
       end
@@ -58,12 +58,12 @@ reg [10:0] hcounter, hcounter_nxt = 0;
   //vertical
   always @*
   begin
-      if (vcounter == 805 && hcounter == 1343)
+      if (vcounter == 627 && hcounter == 1055)
       begin
           vcounter_nxt = 0;
       end
       
-      else if (hcounter == 1343)
+      else if (hcounter == 1055)
       begin
           vcounter_nxt = vcounter +1;
       end
