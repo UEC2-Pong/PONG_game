@@ -22,19 +22,43 @@ void Game(enum GameMode eGameMode, uint8_t GameSpeed){
 
 	while(eScreenMode == GAME){
 		eKeyStatus = CheckingForKeys(XPAR_AXI_UARTLITE_0_BASEADDR);
-		if(eKeyStatus == ESC){
-			eScreenMode 	 = MENU;
-			xil_printf("pressed: 'esc' ");
+		if(eGameMode == SINGLEPLAYER){
+			if(eKeyStatus == ESC){
+				eScreenMode = MENU;
+				ItemsPositionInit();
+				xil_printf("pressed: 'esc' ");
+			}
+			else if(eKeyStatus == W) {
+				left_palette = left_palette - GameSpeed;
+				xil_printf("pressed: 'w' ");
+			}
+			else if(eKeyStatus == S) {
+				left_palette = left_palette + GameSpeed;
+				xil_printf("pressed: 'w' ");
+			}
 		}
-		else if(eKeyStatus == W) {
-			left_palette = left_palette - GameSpeed;
-			right_palette = right_palette - GameSpeed;
-			xil_printf("pressed: 'w' ");
-		}
-		else if(eKeyStatus == S) {
-			left_palette = left_palette + GameSpeed;
-			right_palette = right_palette + GameSpeed;
-			xil_printf("pressed: 'w' ");
+		else if(eGameMode == MULTIPLAYER){
+			if(eKeyStatus == ESC){
+				eScreenMode = MENU;
+				ItemsPositionInit();
+				xil_printf("pressed: 'esc' ");
+			}
+			else if(eKeyStatus == W) {
+				left_palette = left_palette - GameSpeed;
+				xil_printf("pressed: 'w' ");
+			}
+			else if(eKeyStatus == S) {
+				left_palette = left_palette + GameSpeed;
+				xil_printf("pressed: 'w' ");
+			}
+			else if(eKeyStatus == I){
+				right_palette = right_palette - GameSpeed;
+				xil_printf("pressed: 'i' ");
+			}
+			else if(eKeyStatus == K){
+				right_palette = right_palette + GameSpeed;
+				xil_printf("pressed: 'k' ");
+			}
 		}
 		else {}
 		SendGame(left_palette, right_palette, ball_xpos, ball_ypos);
@@ -50,4 +74,11 @@ void SendGame(uint16_t left_palette, uint16_t right_palette, uint16_t ball_xpos,
 
 	XGpio_DiscreteWrite(&gpio, 1, gpio_output);
 	XGpio_DiscreteWrite(&gpio, 2, gpio2_output);
+}
+
+void ItemsPositionInit(void){
+	left_palette  = 0x180;
+	right_palette = 0x180;
+	ball_xpos	  = 0x200;
+	ball_ypos	  = 0x180;
 }
