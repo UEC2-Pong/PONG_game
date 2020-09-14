@@ -24,21 +24,17 @@ void Options(uint8_t *GameSpeed){
 		eKeyStatus = CheckingForKeys(XPAR_AXI_UARTLITE_0_BASEADDR);
 		if(eKeyStatus == W) {
 			icon_highlighter = (icon_highlighter+2)%3;
-			xil_printf("pressed: 'w' ");
 		}
 		else if(eKeyStatus == S) {
 			icon_highlighter = (icon_highlighter+1)%3;
-			xil_printf("pressed: 's' ");
 		}
 		else if(eKeyStatus == ENTER){
 			GameSpeedCode = icon_highlighter;
 			*GameSpeed 	  = aSpeedValue[icon_highlighter];
-			xil_printf("pressed: 'enter' ");
 		}
 		if(eKeyStatus == ESC){
 			eScreenMode 	 = MENU;
 			icon_highlighter = 3;
-			xil_printf("pressed: 'esc' ");
 		}
 		else {}
 		SendOptions(GameSpeedCode, icon_highlighter);
@@ -47,8 +43,8 @@ void Options(uint8_t *GameSpeed){
 }
 
 void SendOptions(uint8_t GameSpeedCode, uint8_t icon_highlighter){
-	gpio_output = eScreenMode<<30;
-	gpio_output = gpio_output | (icon_highlighter<<28);
-	gpio_output = gpio_output | (GameSpeedCode<<26);
+	gpio_output = eScreenMode<<29;
+	gpio_output = gpio_output | (icon_highlighter<<27);
+	gpio_output = gpio_output | (GameSpeedCode<<25);
 	XGpio_DiscreteWrite(&gpio, 1, gpio_output);
 }

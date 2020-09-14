@@ -1,6 +1,5 @@
 // INCLUDES
 #include "xparameters.h"
-#include "xil_printf.h"
 #include "sleep.h"
 #include "xil_types.h"
 #include "xgpio.h"
@@ -22,7 +21,6 @@ void Credits(void){
 		eKeyStatus = CheckingForKeys(XPAR_AXI_UARTLITE_0_BASEADDR);
 		if(eKeyStatus == ESC){
 			eScreenMode  	 = MENU;
-			xil_printf("pressed: 'esc' ");
 		}
 		else {}
 	SendCredits();

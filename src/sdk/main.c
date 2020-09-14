@@ -6,15 +6,17 @@
  *
  *	Control bit distribution is as follows (from MSB to LSB):
  *	gpio1:
- *	31-30: 2 bits for screen selection
- *	29-28: 2 bits for icon highlight
- *	27-26: 2 bits for game speed selection
- *	25-22: 4 unused bits
+ *	31-29: 3 bits for screen selection
+ *	28-27: 2 bits for icon highlight
+ *	26-25: 2 bits for game speed selection
+ *	24-22: 3 unused bits
  *	21-11: 11 bits for ball Y position
  *	10-0 : 11 bits for ball X position.
  *
  *	gpio2:
- *	31-22: 10 unused bits
+ *	31-30: 2  unused bits
+ *	29-26: 4  bits for left score
+ *	25-22: 4  bits for right score
  *	21-11: 11 bits for left palette position
  *	10-0 : 11 bits for right palette position
  *
@@ -28,6 +30,8 @@
  *	1 - Game (both single and multiplayer, differences between the two are software based)
  *	2 - Credits
  *	3 - Options
+ *	4 - Player 1 wins
+ *	5 - Player 2 wins
  *
  *	Icon highlighter codes: TOP icon has code 0. Increment to reach each icon downward.
  *
@@ -44,13 +48,13 @@
 #include "xgpio.h"
 #include "xparameters.h"
 #include "xuartlite_l.h"
-#include "xil_printf.h"
 #include "sleep.h"
 
 #include "keyboard.h"
 #include "game.h"
 #include "credits.h"
 #include "options.h"
+#include "endgame.h"
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //DEFINES
@@ -61,6 +65,7 @@
 
 XGpio gpio;
 uint32_t gpio_output, gpio2_output;
+uint8_t icon_highlighter = 0x000;
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //FUNCTION DECLARATIONS (TO BE SENT TO LIBRARIES)
@@ -73,7 +78,6 @@ void SendMenu(uint8_t);
 
 int main(){
 
-	uint8_t icon_highlighter = 0x00;
 	uint8_t GameSpeed 	  = MEDIUM;
 	enum KeyStatus eKeyStatus;
 	Init();
@@ -83,14 +87,11 @@ int main(){
 		eKeyStatus = CheckingForKeys(XPAR_AXI_UARTLITE_0_BASEADDR);
 		if(eKeyStatus == W) {
 			icon_highlighter = (icon_highlighter+3)%4;
-			xil_printf("pressed: 'w' ");
 		}
 		else if(eKeyStatus == S) {
 			icon_highlighter = (icon_highlighter+1)%4;
-			xil_printf("pressed: 's' ");
 		}
 		else if(eKeyStatus == ENTER){
-			xil_printf("pressed: 'enter' ");
 			if	   ( icon_highlighter == 0 ) {
 				eScreenMode = GAME;
 				Game(SINGLEPLAYER, GameSpeed);
@@ -107,10 +108,9 @@ int main(){
 				eScreenMode = OPTIONS;
 				Options(&GameSpeed);
 			}
-			else xil_printf("ERROR ");
+			else {}
 		}
 		else if(eKeyStatus == ESC){
-			xil_printf("pressed: 'esc' ");
 		}
 		else{
 		}
@@ -124,6 +124,7 @@ int main(){
 //FUNCTION DEFINITIONS (TO BE SENT TO LIBRARIES)
 
 void Init(void){
+	icon_highlighter = 0x000;
 	XGpio_Initialize(&gpio, 0);
 	gpio_output  = 0x00000000;
 	gpio2_output = 0x000C0180;
@@ -132,8 +133,8 @@ void Init(void){
 }
 
 void SendMenu(uint8_t icon_highlighter){
-	gpio_output = eScreenMode<<30;
-	gpio_output = gpio_output | (icon_highlighter<<28);
+	gpio_output = eScreenMode<<29;
+	gpio_output = gpio_output | (icon_highlighter<<27);
 
 	XGpio_DiscreteWrite(&gpio, 1, gpio_output);
 }

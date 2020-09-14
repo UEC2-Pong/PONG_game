@@ -16,7 +16,8 @@ module vga_example (
   input wire [10:0] right_palette_pos,
   input wire [10:0] ball_xpos,
   input wire [10:0] ball_ypos,
-  input wire [1:0]  screen_mode,
+  input wire [7:0]  score,
+  input wire [2:0]  screen_mode,
   input wire [1:0]  icon_highlighter,
   input wire [1:0]  speed_selector,
   
@@ -51,7 +52,7 @@ game_screen my_game_screen (
     .vcount_in(vcwire), .vsync_in(vswire), .vblnk_in(vbwire),
     .hcount_in(hcwire), .hsync_in(hswire), .hblnk_in(hbwire),
     .left_palette_pos(left_palette_pos), .right_palette_pos(right_palette_pos), 
-    .ball_xpos(ball_xpos), .ball_ypos(ball_ypos),
+    .ball_xpos(ball_xpos), .ball_ypos(ball_ypos), .score(score),
     .pclk(clk_in),
     .vsync_out(vs_game), .vblnk_out(vb_game),
     .hsync_out(hs_game), .hblnk_out(hb_game),
@@ -100,11 +101,24 @@ credits_screen my_credits_screen (
     .rgb_out(rgb_credits)
 );
 
+  wire vs_winner, hs_winner;
+  wire vb_winner, hb_winner;
+  wire [11:0] rgb_winner;
+  
+winner_screen my_winner_screen (
+    .vcount_in(vcwire), .vsync_in(vswire), .vblnk_in(vbwire),
+    .hcount_in(hcwire), .hsync_in(hswire), .hblnk_in(hbwire),
+    .player_won(screen_mode[0]), .pclk(clk_in),
+    .vsync_out(vs_winner), .vblnk_out(vb_winner),
+    .hsync_out(hs_winner), .hblnk_out(hb_winner),
+    .rgb_out(rgb_winner)
+);
+
 //output selection
   
 always @(posedge clk_in) begin
     case( screen_mode )
-        2'b00: begin  //MENU
+        3'b000: begin  //MENU
             hs_out <= hs_menu;
             vs_out <= vs_menu;
             if (vb_menu || hb_menu) rgb_out <= 12'h0_0_0; 
@@ -112,7 +126,7 @@ always @(posedge clk_in) begin
                 rgb_out <= rgb_menu;    
             end
         end
-        2'b01: begin  //GAME
+        3'b001: begin  //GAME
             hs_out <= hs_game;
             vs_out <= vs_game;
             if (vb_game || hb_game) rgb_out <= 12'h0_0_0; 
@@ -120,7 +134,7 @@ always @(posedge clk_in) begin
                 rgb_out <= rgb_game;    
             end
         end
-        2'b11: begin  //OPTIONS
+        3'b011: begin  //OPTIONS
             hs_out <= hs_options;
             vs_out <= vs_options;
             if (vb_options || hb_options) rgb_out <= 12'h0_0_0; 
@@ -128,12 +142,28 @@ always @(posedge clk_in) begin
                 rgb_out <= rgb_options;    
             end
         end
-        2'b10: begin  //CREDITS
+        3'b010: begin  //CREDITS
             hs_out <= hs_credits;
             vs_out <= vs_credits;
             if (vb_credits || hb_credits) rgb_out <= 12'h0_0_0; 
             else begin
                 rgb_out <= rgb_credits;    
+            end
+        end
+        3'b100: begin  //PLAYER 1 WINS
+            hs_out <= hs_winner;
+            vs_out <= vs_winner;
+            if (vb_winner || hb_winner) rgb_out <= 12'h0_0_0; 
+            else begin
+                rgb_out <= rgb_winner;    
+            end
+        end
+        3'b101: begin  //PLAYER 2 WINS
+            hs_out <= hs_winner;
+            vs_out <= vs_winner;
+            if (vb_winner || hb_winner) rgb_out <= 12'h0_0_0; 
+            else begin
+                rgb_out <= rgb_winner;    
             end
         end
         default: begin  //MENU is default
