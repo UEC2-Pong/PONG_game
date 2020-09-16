@@ -11,13 +11,15 @@
 // using Verilog-2001 syntax.
 
 module vga_timing (
+  input wire pclk,
+  input wire rst,
+  
   output wire [10:0] vcount,
   output wire vsync,
   output wire vblnk,
   output wire [10:0] hcount,
   output wire hsync,
-  output wire hblnk,
-  input wire pclk
+  output wire hblnk
   );
 
   // Describe the actual circuit for the assignment.
@@ -75,6 +77,13 @@ reg [10:0] hcounter, hcounter_nxt = 0;
   end
   
   always @(posedge pclk)
+  if(rst)
+  begin
+    hcounter <= 1'b0;
+    vcounter <= 1'b0;
+  end
+  
+  else
   begin
       hcounter <= hcounter_nxt;
       vcounter <= vcounter_nxt;

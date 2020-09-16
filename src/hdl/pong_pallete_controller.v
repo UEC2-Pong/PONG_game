@@ -22,6 +22,7 @@
 
 module pong_pallete_controller(
     input wire clk,
+    input wire rst,
     input wire usb_uart_rxd,
     
     output wire usb_uart_txd,
@@ -46,12 +47,12 @@ wire vsync, hsync;
 wire pclk, clk100mhz, locked;  
 
 clk_wiz_0 my_clk (
-.clk(clk), .reset(1'b0),
+.clk(clk), .reset(rst),
 .clk_out_100MHz(clk100mhz), .clk_out_65MHz(pclk), .locked(locked)
 );
 
 vga_example my_vga_example (
-.clk_in(pclk), .screen_mode(screen_mode_wire), .icon_highlighter(icon_highlighter_wire),
+.clk_in(pclk), .rst(rst), .screen_mode(screen_mode_wire), .icon_highlighter(icon_highlighter_wire),
 .speed_selector(game_speed_wire),
 .left_palette_pos(left_palette_pos_wire), .right_palette_pos(right_palette_pos_wire),
 .ball_xpos(ball_xpos_wire), .ball_ypos(ball_ypos_wire), .score(score_wire),
@@ -59,7 +60,7 @@ vga_example my_vga_example (
 );
 
 design_1_wrapper my_design_wrapper (
-.clk_in1(clk100mhz), .gpio_io_o({screen_mode_wire, icon_highlighter_wire, game_speed_wire, 3'b000, ball_ypos_wire, ball_xpos_wire}), .reset(1'b0),
+.clk_in1(clk100mhz), .gpio_io_o({screen_mode_wire, icon_highlighter_wire, game_speed_wire, 3'b000, ball_ypos_wire, ball_xpos_wire}), .reset(rst),
 .gpio2_io_o({2'b00, score_wire, left_palette_pos_wire, right_palette_pos_wire}),
 .usb_uart_rxd(usb_uart_rxd), .usb_uart_txd(usb_uart_txd)
 );
