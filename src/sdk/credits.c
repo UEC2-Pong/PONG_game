@@ -29,6 +29,6 @@ void Credits(void){
 }
 
 void SendCredits(void){
-	gpio_output = eScreenMode<<30;
+	gpio_output = eScreenMode<<29;
 	XGpio_DiscreteWrite(&gpio, 1, gpio_output);
 }

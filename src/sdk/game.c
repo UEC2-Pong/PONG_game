@@ -27,6 +27,10 @@ enum MovementDirection {LEFT, RIGHT};
 enum LeftMovement	   {L_STOP, L_UP, L_DOWN};
 enum RightMovement	   {R_STOP, R_UP, R_DOWN};
 XGpio gpio;
+enum MovementDirection eMovementDirection = RIGHT;
+int32_t ball_xlarge   = 0x80000;
+int32_t ball_ylarge   = 0x60000;
+double a_large	  	 = 0;
 extern uint32_t gpio_output, gpio2_output;
 
 // FUNCTION DECLARATIONS
@@ -111,10 +115,6 @@ void PaletteMovement(uint8_t GameSpeed, enum KeyStatus eKeyStatus, enum GameMode
 }
 
 void BallMovement(uint8_t GameSpeed){
-	static enum MovementDirection eMovementDirection = RIGHT;
-	static int32_t ball_xlarge   = 0x80000;
-	static int32_t ball_ylarge   = 0x60000;
-	static double a_large	  	 = 0;
 	double Divider;
 
 	Divider = sqrt(a_large*a_large + MULTIPLICATOR*MULTIPLICATOR);
@@ -180,7 +180,11 @@ void GameInit(void){
 	left_palette   = 0x180;
 	right_palette  = 0x180;
 	ball_xpos	   = 0x200;
+	ball_xlarge    = 0x80000;
 	ball_ypos	   = 0x180;
+	ball_ylarge    = 0x60000;
 	left_score     = 0;
 	right_score    = 0;
+	a_large 	   = 0;
+	eMovementDirection = RIGHT;
 }

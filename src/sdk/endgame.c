@@ -23,7 +23,6 @@ void Player1Wins(void){
 			eScreenMode = MENU;
 		}
 		else {}
-		//gpio_output = eScreenMode<<30;
 		SendEndGame();
 		usleep(2500);
 	}
@@ -38,7 +37,6 @@ void Player2Wins(void){
 			eScreenMode = MENU;
 		}
 		else {}
-		//gpio_output = eScreenMode<<30;
 		SendEndGame();
 		usleep(2500);
 	}
